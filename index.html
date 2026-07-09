@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BHON 응대 SOP</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tabler-icons/1.119.0/iconfont/tabler-icons.min.css">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#0a0a0a;color:#e8e8e8;min-height:100vh;padding:2rem 1rem}
+.container{max-width:600px;margin:0 auto}
+h1{font-size:18px;font-weight:600;margin-bottom:2rem;color:#fff;letter-spacing:-0.01em}
+.step-bar{display:flex;align-items:center;gap:6px;margin-bottom:2rem;overflow-x:auto;padding-bottom:4px}
+.sd{width:26px;height:26px;border-radius:50%;border:1px solid #333;display:flex;align-items:center;justify-content:center;font-size:11px;color:#666;background:#111;flex-shrink:0}
+.sd.active{background:#1a1a1a;color:#e8e8e8;border-color:#555;font-weight:600}
+.sd.done{background:#0d2818;color:#4ade80;border-color:#166534}
+.sl{flex:1;min-width:12px;height:1px;background:#222}
+.lbl{font-size:11px;color:#555;text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px}
+.qt{font-size:20px;font-weight:600;color:#fff;margin-bottom:6px;letter-spacing:-0.01em}
+.qs{font-size:14px;color:#888;margin-bottom:1.5rem;line-height:1.6}
+.og{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;margin-bottom:1.5rem}
+.ob{background:#111;border:1px solid #222;border-radius:12px;padding:16px;text-align:left;cursor:pointer;transition:border-color .15s,background .15s}
+.ob:hover{border-color:#444;background:#161616}
+.oi{font-size:22px;margin-bottom:10px;color:#666}
+.ol{font-size:14px;font-weight:500;color:#e8e8e8;margin-bottom:3px}
+.od{font-size:12px;color:#666;line-height:1.5}
+.rc{background:#111;border:1px solid #222;border-radius:12px;padding:1.25rem;margin-bottom:1rem}
+.rc.hi{border-color:#333}
+.rl{font-size:11px;color:#555;text-transform:uppercase;letter-spacing:.08em;margin-bottom:10px}
+.cb{background:#161616;border-radius:8px;padding:14px 60px 14px 16px;font-size:13px;color:#e8e8e8;line-height:1.8;position:relative;white-space:pre-wrap}
+.cpb{position:absolute;top:10px;right:10px;background:#111;border:1px solid #333;border-radius:6px;padding:4px 10px;font-size:12px;cursor:pointer;color:#888}
+.cpb:hover{color:#e8e8e8;border-color:#555}
+.clb{display:flex;align-items:center;gap:12px;background:#111;border:1px solid #2a2a2a;border-radius:12px;padding:14px 18px;cursor:pointer;margin-top:12px;text-decoration:none;width:100%;transition:background .15s,border-color .15s}
+.clb:hover{background:#161616;border-color:#444}
+.clt{flex:1}
+.cll{font-size:14px;font-weight:500;color:#e8e8e8}
+.cld{font-size:12px;color:#666;margin-top:2px}
+.al{list-style:none}
+.al li{display:flex;align-items:flex-start;gap:10px;padding:10px 0;border-bottom:1px solid #1a1a1a;font-size:14px;color:#e8e8e8;line-height:1.5}
+.al li:last-child{border-bottom:none}
+.nm{width:22px;height:22px;border-radius:50%;background:#1a1a1a;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:500;color:#888;flex-shrink:0;margin-top:1px}
+.badge{display:inline-block;font-size:11px;padding:3px 10px;border-radius:6px;font-weight:500}
+.ba{background:#0d2818;color:#4ade80}
+.bb{background:#1a1200;color:#facc15}
+.bc{background:#1a1a1a;color:#888}
+.nr{display:flex;gap:10px;margin-top:1.5rem;flex-wrap:wrap}
+.bn{background:#111;border:1px solid #222;border-radius:8px;padding:8px 16px;font-size:13px;cursor:pointer;color:#888;transition:color .15s,border-color .15s}
+.bn:hover{color:#e8e8e8;border-color:#444}
+.ib{background:#0a1a2a;border-radius:8px;padding:12px 16px;font-size:13px;color:#60a5fa;margin-bottom:1rem;line-height:1.6}
+</style>
+</head>
+<body>
+<div class="container">
+<h1>BHON 응대 SOP</h1>
+<div class="step-bar" id="stepbar"></div>
+<div id="app"></div>
+</div>
+<script>
+const CL='https://charming-centaur-d1ad1a.netlify.app/';
+const CL_TEXT=`https://charming-centaur-d1ad1a.netlify.app/`;
+const S={step:0,type:null,channel:null,checklist:null,lead:null};
+const STEPS=['유입 유형','채널','1차 응대','체크리스트','리드 등급','응대 완료'];
+const CH_IN=[
+  {id:'insta',ic:'ti-brand-instagram',l:'인스타 DM',d:'게시물·릴스 보고 연락'},
+  {id:'naver',ic:'ti-search',l:'네이버 톡톡',d:'블로그·플레이스 유입'},
+  {id:'kakao',ic:'ti-message-circle',l:'카카오톡',d:'채널 상담하기'},
+  {id:'email',ic:'ti-mail',l:'이메일·문의폼',d:'홈페이지 유입'},
+];
+const CH_OUT=[
+  {id:'thread',ic:'ti-pencil',l:'쓰레드',d:'콘텐츠 댓글 반응 후'},
+  {id:'insta',ic:'ti-brand-instagram',l:'인스타 DM',d:'팔로워·타겟 매장'},
+  {id:'cold',ic:'ti-building-store',l:'콜드 DM',d:'타겟 매장 직접 발굴'},
+];
+const FIRST=`안녕하세요, BHON입니다.
+
+저희는 오프라인 매장의 시행착오를 해결하고 브랜드 본연의 가치와 전략을 설계하여, 매장의 본질적인 경쟁력을 만드는 운영 기반의 성장 설계자(Operational Growth Architect)입니다.
+
+아래 체크리스트를 작성해 전달해 주시면, 현재 매장의 브랜드 운영 상황을 전체적으로 파악한 후 안내드리도록 하겠습니다.`;
+const REMIND=`안녕하세요 :)
+지난번 체크리스트 전달드렸는데, 혹시 확인하셨나요?
+
+작성하시는 데 어려운 부분이 있으시면 편하게 말씀해 주세요.
+현재 매장 운영 상황을 파악한 후 맞는 방향으로 안내드릴 수 있어요.`;
+const FOLLOW={
+  inbound:{
+    A:`안녕하세요. ☺️
+
+[종합 점검 체크리스트] 제출이 확인되었습니다.
+
+작성해 주신 내용을 바탕으로 매장의 운영, 브랜드, 고객 경험, 성장 구조를 다각도로 검토하여 사전 진단 리포트를 준비해드리겠습니다.
+
+단순한 의견 전달이 아닌, 현재 겪고 계신 운영상의 어려움과 개선 가능성을 함께 분석하여 대표님 매장에 맞는 현실적인 방향과 우선 개선 포인트를 최대한 구체적으로 정리해드릴 예정입니다.
+
+사전 진단 리포트는 1~2일 내 준비되며, 이후 1~2시간 내외의 온라인 또는 대면 미팅을 통해 분석 내용과 향후 방향을 자세히 안내드리겠습니다.
+
+일정 가능한 시간을 알려주시면 일정에 맞춰 안내드리겠습니다. 🙂`,
+    B:`안녕하세요. ☺️
+
+[종합 점검 체크리스트] 제출이 확인되었습니다.
+
+작성해 주신 내용을 바탕으로 매장의 운영, 브랜드, 고객 경험을 검토하여 사전 진단 리포트를 준비해드리겠습니다.
+
+현재 상황을 객관적으로 분석한 뒤, 개선 가능성이 높은 부분과 우선적으로 검토하면 좋을 사항들을 정리하여 안내드릴 예정입니다.
+
+사전 진단 리포트는 1~2일 내 준비되며, 이후 1~2시간 내외의 온라인 또는 대면 미팅을 통해 분석 내용과 향후 방향을 자세히 안내드리겠습니다.
+
+일정 가능한 시간을 알려주시면 일정에 맞춰 안내드리겠습니다. 🙂`,
+    C:`안녕하세요. ☺️
+
+[종합 점검 체크리스트] 제출이 확인되었습니다.
+
+작성해 주신 내용을 바탕으로 매장의 현재 운영 현황을 검토하여 사전 진단 리포트를 준비해드리겠습니다.
+
+현재 상황을 분석한 뒤, 부담 없이 참고하실 수 있는 개선 방향과 앞으로 도움이 될 수 있는 운영 포인트를 정리하여 안내드릴 예정입니다.
+
+사전 진단 리포트는 1~2일 내 준비되며, 이후 1~2시간 내외의 온라인 또는 대면 미팅을 통해 현재 상황과 앞으로의 방향에 대해 함께 이야기 나눌 수 있도록 안내드리겠습니다.
+
+일정 가능한 시간을 알려주시면 일정에 맞춰 안내드리겠습니다. 🙂`,
+  },
+  outbound:{
+    A:`안녕하세요. 😊
+
+[종합 점검 체크리스트] 제출이 확인되었습니다.
+
+작성해 주신 내용을 바탕으로 매장의 운영, 브랜드, 고객 경험, 성장 구조를 다각도로 검토하여 사전 진단 리포트를 준비해드리겠습니다.
+
+현재 운영 상황을 객관적으로 분석하여 대표님 매장에 적용 가능한 개선 방향과 우선적으로 검토해야 할 사항을 정리해드릴 예정입니다.
+
+사전 진단 리포트는 1~2일 내 준비되며, 이후 1시간 내외의 온라인 또는 대면 미팅을 통해 분석 내용과 개선 방향을 함께 안내드리겠습니다.
+
+일정 가능한 시간을 알려주시면 일정에 맞춰 안내드리겠습니다. 🙂`,
+    B:`안녕하세요. 😊
+
+[종합 점검 체크리스트] 제출이 확인되었습니다.
+
+작성해 주신 내용을 바탕으로 매장의 운영과 브랜드 현황을 검토하여 사전 진단 리포트를 준비해드리겠습니다.
+
+현재 상황을 분석한 뒤 개선 가능성이 있는 부분과 우선적으로 검토하면 좋을 사항을 정리하여 안내드릴 예정입니다.
+
+사전 진단 리포트는 1~2일 내 준비되며, 이후 30~60분 내외의 온라인 미팅을 통해 간단히 설명드리고 궁금하신 부분도 함께 안내드리겠습니다.
+
+편하신 시간을 알려주시면 일정에 맞춰 안내드리겠습니다. 🙂`,
+    C:`안녕하세요. 😊
+
+[종합 점검 체크리스트] 제출이 확인되었습니다.
+
+작성해 주신 내용을 바탕으로 매장의 현재 운영 현황을 검토하여 사전 진단 리포트를 준비해드리겠습니다.
+
+현재 상황을 간단히 분석하여 앞으로 참고하실 수 있는 개선 방향과 운영 포인트를 정리해드릴 예정입니다.
+
+사전 진단 리포트는 1~2일 내 준비되며, 전달드린 내용을 확인하신 후 필요하실 경우 편하신 일정에 맞춰 온라인 또는 대면으로 자세히 안내드리겠습니다.
+
+편하신 때 언제든 연락 주시면 도움드리겠습니다. 🙂`,
+  },
+};
+const ACT={
+  inbound:{
+    A:['CLIENT DB 등록 (리드: A)','사전 분석 리포트 제작','온라인/대면 미팅 (1~2시간) 상담 일정 확정 (2일 내)','상담 후 맞춤 제안서·견적 전달','계약서 초안 준비'],
+    B:['CLIENT DB 등록 (리드: B)','사전 분석 리포트 제작','온라인/대면 미팅 (1~2시간) 상담 일정 확정','상담 후 맞춤 제안서·견적 전달','계약서 초안 준비','안됐을 경우 → 2주 후 재컨택 캘린더 등록'],
+    C:['CLIENT DB 등록 (리드: C)','사전 분석 리포트 제작','온라인/대면 미팅 (1~2시간) 상담 일정 확정','상담 후 맞춤 제안서·견적 전달','계약서 초안 준비','안됐을 경우 → 2주 후 재컨택 캘린더 등록'],
+  },
+  outbound:{
+    A:['CLIENT DB 등록','사전 분석 리포트 제작','온라인/대면 미팅(1시간) 일정 확정 (3일 내)','상담 후 맞춤 제안서·견적 전달','계약서 초안 준비','미계약 시 1주 후 재컨택 캘린더 등록'],
+    B:['관심 고객(DB) 등록','사전 분석 리포트 제작','온라인/대면 미팅(1시간) 일정 확정 (3일 내)','상담 후 맞춤 제안서·견적 전달','계약서 초안 준비','미계약 시 3주 후 재컨택 캘린더 등록'],
+    C:['C등급 DB 등록','사전 분석 리포트 제작','온라인/대면 미팅(1시간) 일정 확정 (3일 내)','상담 후 맞춤 제안서·견적 전달','계약서 초안 준비','미계약 시 3주 후 재컨택 캘린더 등록'],
+  },
+};
+function cpy(id,btn){
+  const t=document.getElementById(id).getAttribute('data-text');
+  navigator.clipboard.writeText(t).then(()=>{btn.textContent='복사됨';setTimeout(()=>btn.textContent='복사',1500);});
+}
+function cbox(id,text){
+  const esc=text.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  return `<div class="cb" id="${id}" data-text="${text.replace(/"/g,'&quot;')}">${esc}<button class="cpb" onclick="cpy('${id}',this)">복사</button></div>`;
+}
+function clBtn(){
+  return `<div class="clb" onclick="copyCL(this)" style="cursor:pointer">
+    <i class="ti ti-clipboard-list" style="font-size:22px;color:#555"></i>
+    <div class="clt"><div class="cll">체크리스트 복사</div><div class="cld">누르면 클립보드에 복사돼요 → 바로 붙여넣기 전송</div></div>
+    <i class="ti ti-copy" style="font-size:16px;color:#444"></i>
+  </div>`;
+}
+function copyCL(el){
+  navigator.clipboard.writeText(CL_TEXT).then(()=>{
+    const lbl=el.querySelector('.cll');
+    const desc=el.querySelector('.cld');
+    lbl.textContent='복사됐어요!';
+    desc.textContent='카카오·인스타에 바로 붙여넣기하세요';
+    setTimeout(()=>{lbl.textContent='체크리스트 복사';desc.textContent='누르면 클립보드에 복사돼요 → 바로 붙여넣기 전송';},2000);
+  });
+}
+function renderStepBar(){
+  document.getElementById('stepbar').innerHTML=STEPS.map((l,i)=>{
+    let c='sd';
+    if(i<S.step)c+=' done';
+    else if(i===S.step)c+=' active';
+    const inn=i<S.step?'<i class="ti ti-check" style="font-size:12px"></i>':(i+1);
+    return (i>0?'<div class="sl"></div>':'')+`<div class="${c}" title="${l}">${inn}</div>`;
+  }).join('');
+}
+function render(){
+  renderStepBar();
+  const app=document.getElementById('app');
+  let c='';
+  if(S.step===0){
+    c=`<div class="lbl">step 1 / ${STEPS.length}</div>
+    <div class="qt">유입 유형이 어떻게 돼요?</div>
+    <div class="qs">상대방이 먼저 연락했나요, 우리가 먼저 건드렸나요?</div>
+    <div class="og">
+      <div class="ob" onclick="go('type','inbound')"><div class="oi"><i class="ti ti-inbox"></i></div><div class="ol">인바운드</div><div class="od">상대방이 먼저 문의함</div></div>
+      <div class="ob" onclick="go('type','outbound')"><div class="oi"><i class="ti ti-send"></i></div><div class="ol">아웃바운드</div><div class="od">우리가 먼저 접근함</div></div>
+    </div>`;
+  } else if(S.step===1){
+    const opts=S.type==='inbound'?CH_IN:CH_OUT;
+    c=`<div class="lbl">step 2 / ${STEPS.length}</div>
+    <div class="qt">어떤 채널이에요?</div>
+    <div class="qs">문의가 들어온(또는 접근한) 채널을 선택하세요</div>
+    <div class="og">${opts.map(ch=>`<div class="ob" onclick="go('channel','${ch.id}')"><div class="oi"><i class="ti ${ch.ic}"></i></div><div class="ol">${ch.l}</div><div class="od">${ch.d}</div></div>`).join('')}</div>
+    <div class="nr"><button class="bn" onclick="back()"><i class="ti ti-arrow-left" style="font-size:13px;vertical-align:-2px;margin-right:4px"></i>이전</button></div>`;
+  } else if(S.step===2){
+    c=`<div class="lbl">step 3 / ${STEPS.length}</div>
+    <div class="qt">1차 응대 문구</div>
+    <div class="qs">복사 후 전송하고, 체크리스트 링크를 함께 보내세요</div>
+    <div class="rc hi"><div class="rl">전송할 문구</div>${cbox('tmpl_first',FIRST)}${clBtn()}</div>
+    <div class="nr">
+      <button class="bn" onclick="back()"><i class="ti ti-arrow-left" style="font-size:13px;vertical-align:-2px;margin-right:4px"></i>이전</button>
+      <button class="bn" onclick="S.step++;render()">전송했어요 →</button>
+    </div>`;
+  } else if(S.step===3){
+    c=`<div class="lbl">step 4 / ${STEPS.length}</div>
+    <div class="qt">체크리스트 제출했나요?</div>
+    <div class="qs">상대방이 체크리스트를 작성해서 제출했는지 확인하세요</div>
+    <div class="og">
+      <div class="ob" onclick="go('checklist','done')"><div class="oi"><i class="ti ti-circle-check"></i></div><div class="ol">제출 완료</div><div class="od">체크리스트 내용 확인 가능</div></div>
+      <div class="ob" onclick="go('checklist','pending')"><div class="oi"><i class="ti ti-clock"></i></div><div class="ol">미제출 / 무응답</div><div class="od">아직 응답이 없는 상태</div></div>
+    </div>
+    <div class="nr"><button class="bn" onclick="back()"><i class="ti ti-arrow-left" style="font-size:13px;vertical-align:-2px;margin-right:4px"></i>이전</button></div>`;
+  } else if(S.step===4){
+    if(S.checklist==='pending'){
+      c=`<div class="lbl">step 4 / ${STEPS.length} — 미제출</div>
+      <div class="qt">리마인드 문구 전송</div>
+      <div class="qs">1차 응대 후 3~5일 내 한 번만 리마인드하세요. 두 번 이상은 하지 마세요.</div>
+      <div class="rc hi"><div class="rl">리마인드 문구</div>${cbox('tmpl_remind',REMIND)}${clBtn()}</div>
+      <div class="ib"><i class="ti ti-info-circle" style="font-size:15px;vertical-align:-2px;margin-right:6px"></i>리마인드 후에도 무응답이면 C등급으로 분류하고 3~4주 후 재컨택 여부를 판단하세요.</div>
+      <div class="nr">
+        <button class="bn" onclick="back()"><i class="ti ti-arrow-left" style="font-size:13px;vertical-align:-2px;margin-right:4px"></i>이전</button>
+        <button class="bn" onclick="go('lead','C')">리마인드 후에도 무응답 →</button>
+      </div>`;
+    } else {
+      c=`<div class="lbl">step 5 / ${STEPS.length}</div>
+      <div class="qt">리드 등급을 판단하세요</div>
+      <div class="qs">체크리스트 내용을 보고 선택하세요</div>
+      <div class="og">
+        <div class="ob" onclick="go('lead','A')"><div class="oi"><i class="ti ti-flame"></i></div><div class="ol">A등급</div><div class="od">운영 중, 개선 의지 높음, 예산 가능, 빠른 진행</div></div>
+        <div class="ob" onclick="go('lead','B')"><div class="oi"><i class="ti ti-search"></i></div><div class="ol">B등급</div><div class="od">탐색 단계, 방향 고민 중, 추후 가능성</div></div>
+        <div class="ob" onclick="go('lead','C')"><div class="oi"><i class="ti ti-coins"></i></div><div class="ol">C등급</div><div class="od">가격 비교, 실행 의지 낮음</div></div>
+      </div>
+      <div class="nr"><button class="bn" onclick="back()"><i class="ti ti-arrow-left" style="font-size:13px;vertical-align:-2px;margin-right:4px"></i>이전</button></div>`;
+    }
+  } else if(S.step===5){
+    const al=ACT[S.type][S.lead]||[];
+    const bc='b'+S.lead.toLowerCase();
+    c=`<div class="lbl">step 6 / ${STEPS.length} — 완료</div>
+    <div class="qt">후속 응대 가이드</div>
+    <div style="margin-bottom:1.25rem">
+      <span class="badge ${bc}">${S.lead}등급</span>
+      <span style="font-size:13px;color:#666;margin-left:8px">${S.type==='inbound'?'인바운드':'아웃바운드'} · ${S.channel}</span>
+    </div>
+    <div class="rc hi"><div class="rl">체크리스트 확인 후 후속 문구</div>${cbox('tmpl_follow',FOLLOW[S.type][S.lead])}</div>
+    <div class="rc"><div class="rl">지금 해야 할 액션</div>
+      <ul class="al">${al.map((a,i)=>`<li><span class="nm">${i+1}</span>${a}</li>`).join('')}</ul>
+    </div>
+    <div class="nr">
+      <button class="bn" onclick="reset()"><i class="ti ti-refresh" style="font-size:13px;vertical-align:-2px;margin-right:4px"></i>처음부터</button>
+      <button class="bn" onclick="back()"><i class="ti ti-arrow-left" style="font-size:13px;vertical-align:-2px;margin-right:4px"></i>이전</button>
+    </div>`;
+  }
+  app.innerHTML=c;
+}
+function go(k,v){S[k]=v;S.step++;render();}
+function back(){
+  S.step--;
+  if(S.step<=0){S.step=0;S.type=null;S.channel=null;S.checklist=null;S.lead=null;}
+  if(S.step===1){S.channel=null;S.checklist=null;S.lead=null;}
+  if(S.step===2){S.checklist=null;S.lead=null;}
+  if(S.step===3){S.checklist=null;S.lead=null;}
+  if(S.step===4){S.lead=null;}
+  render();
+}
+function reset(){S.step=0;S.type=null;S.channel=null;S.checklist=null;S.lead=null;render();}
+render();
+</script>
+</body>
+</html>
