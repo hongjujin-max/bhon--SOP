@@ -35,6 +35,8 @@ h1{font-size:18px;font-weight:600;margin-bottom:2rem;color:#fff;letter-spacing:-
 .clt{flex:1}
 .cll{font-size:14px;font-weight:500;color:#e8e8e8}
 .cld{font-size:12px;color:#666;margin-top:2px}
+.dl-btn{display:flex;align-items:center;gap:8px;background:#111;border:1px solid #222;border-radius:10px;padding:12px 14px;text-decoration:none;color:#e8e8e8;transition:border-color .15s,background .15s}
+.dl-btn:hover{background:#161616;border-color:#444}
 .al{list-style:none}
 .al li{display:flex;align-items:flex-start;gap:10px;padding:10px 0;border-bottom:1px solid #1a1a1a;font-size:14px;color:#e8e8e8;line-height:1.5}
 .al li:last-child{border-bottom:none}
@@ -56,8 +58,8 @@ h1{font-size:18px;font-weight:600;margin-bottom:2rem;color:#fff;letter-spacing:-
 <div id="app"></div>
 </div>
 <script>
-const CL='https://magical-faun-106b10.netlify.app/';
-const CL_TEXT=`https://magical-faun-106b10.netlify.app/`;
+const CL_URL='https://magical-faun-106b10.netlify.app/';
+const GH='https://raw.githubusercontent.com/hongjujin-max/bhon--SOP/main/';
 const S={step:0,type:null,channel:null,checklist:null,lead:null};
 const STEPS=['유입 유형','채널','1차 응대','체크리스트','리드 등급','응대 완료'];
 const CH_IN=[
@@ -171,17 +173,29 @@ function cpy(id,btn){
 }
 function cbox(id,text){
   const esc=text.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
-  return `<div class="cb" id="${id}" data-text="${text.replace(/"/g,'&quot;')}">${esc}<button class="cpb" onclick="cpy('${id}',this)">복사</button></div>`;
+  return '<div class="cb" id="'+id+'" data-text="'+text.replace(/"/g,'&quot;')+'">'+esc+'<button class="cpb" onclick="cpy(\''+id+'\',this)">복사</button></div>';
+}
+function cardBlock(){
+  return '<div style="margin-top:12px;margin-bottom:12px">'
+    +'<div class="rl" style="margin-bottom:8px">명함 전송</div>'
+    +'<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">'
+    +'<a href="'+GH+'front.png" download="BHON_앞면.png" class="dl-btn">'
+    +'<i class="ti ti-download" style="font-size:18px;color:#666;flex-shrink:0"></i>'
+    +'<span style="font-size:13px;font-weight:500">앞면 다운</span></a>'
+    +'<a href="'+GH+'bohyun.png" download="BHON_박보현.png" class="dl-btn">'
+    +'<i class="ti ti-download" style="font-size:18px;color:#666;flex-shrink:0"></i>'
+    +'<span style="font-size:13px;font-weight:500">박보현 다운</span></a>'
+    +'</div></div>';
 }
 function clBtn(){
-  return `<div class="clb" onclick="copyCL(this)" style="cursor:pointer">
-    <i class="ti ti-clipboard-list" style="font-size:22px;color:#555"></i>
-    <div class="clt"><div class="cll">체크리스트 복사</div><div class="cld">누르면 클립보드에 복사돼요 → 바로 붙여넣기 전송</div></div>
-    <i class="ti ti-copy" style="font-size:16px;color:#444"></i>
-  </div>`;
+  return cardBlock()
+    +'<div class="clb" onclick="copyCL(this)">'
+    +'<i class="ti ti-clipboard-list" style="font-size:22px;color:#555"></i>'
+    +'<div class="clt"><div class="cll">체크리스트 복사</div><div class="cld">누르면 클립보드에 복사돼요 → 바로 붙여넣기 전송</div></div>'
+    +'<i class="ti ti-copy" style="font-size:16px;color:#444"></i></div>';
 }
 function copyCL(el){
-  navigator.clipboard.writeText(CL_TEXT).then(()=>{
+  navigator.clipboard.writeText(CL_URL).then(()=>{
     const lbl=el.querySelector('.cll');
     const desc=el.querySelector('.cld');
     lbl.textContent='복사됐어요!';
@@ -218,14 +232,14 @@ function render(){
     <div class="og">${opts.map(ch=>`<div class="ob" onclick="go('channel','${ch.id}')"><div class="oi"><i class="ti ${ch.ic}"></i></div><div class="ol">${ch.l}</div><div class="od">${ch.d}</div></div>`).join('')}</div>
     <div class="nr"><button class="bn" onclick="back()"><i class="ti ti-arrow-left" style="font-size:13px;vertical-align:-2px;margin-right:4px"></i>이전</button></div>`;
   } else if(S.step===2){
-    c=`<div class="lbl">step 3 / ${STEPS.length}</div>
-    <div class="qt">1차 응대 문구</div>
-    <div class="qs">복사 후 전송하고, 체크리스트 링크를 함께 보내세요</div>
-    <div class="rc hi"><div class="rl">전송할 문구</div>${cbox('tmpl_first',FIRST)}${clBtn()}</div>
-    <div class="nr">
-      <button class="bn" onclick="back()"><i class="ti ti-arrow-left" style="font-size:13px;vertical-align:-2px;margin-right:4px"></i>이전</button>
-      <button class="bn" onclick="S.step++;render()">전송했어요 →</button>
-    </div>`;
+    c='<div class="lbl">step 3 / '+STEPS.length+'</div>'
+     +'<div class="qt">1차 응대 문구</div>'
+     +'<div class="qs">복사 후 전송하고, 명함과 체크리스트 링크를 함께 보내세요</div>'
+     +'<div class="rc hi"><div class="rl">전송할 문구</div>'+cbox('tmpl_first',FIRST)+clBtn()+'</div>'
+     +'<div class="nr">'
+     +'<button class="bn" onclick="back()"><i class="ti ti-arrow-left" style="font-size:13px;vertical-align:-2px;margin-right:4px"></i>이전</button>'
+     +'<button class="bn" onclick="S.step++;render()">전송했어요 →</button>'
+     +'</div>';
   } else if(S.step===3){
     c=`<div class="lbl">step 4 / ${STEPS.length}</div>
     <div class="qt">체크리스트 제출했나요?</div>
@@ -237,15 +251,15 @@ function render(){
     <div class="nr"><button class="bn" onclick="back()"><i class="ti ti-arrow-left" style="font-size:13px;vertical-align:-2px;margin-right:4px"></i>이전</button></div>`;
   } else if(S.step===4){
     if(S.checklist==='pending'){
-      c=`<div class="lbl">step 4 / ${STEPS.length} — 미제출</div>
-      <div class="qt">리마인드 문구 전송</div>
-      <div class="qs">1차 응대 후 3~5일 내 한 번만 리마인드하세요. 두 번 이상은 하지 마세요.</div>
-      <div class="rc hi"><div class="rl">리마인드 문구</div>${cbox('tmpl_remind',REMIND)}${clBtn()}</div>
-      <div class="ib"><i class="ti ti-info-circle" style="font-size:15px;vertical-align:-2px;margin-right:6px"></i>리마인드 후에도 무응답이면 C등급으로 분류하고 3~4주 후 재컨택 여부를 판단하세요.</div>
-      <div class="nr">
-        <button class="bn" onclick="back()"><i class="ti ti-arrow-left" style="font-size:13px;vertical-align:-2px;margin-right:4px"></i>이전</button>
-        <button class="bn" onclick="go('lead','C')">리마인드 후에도 무응답 →</button>
-      </div>`;
+      c='<div class="lbl">step 4 / '+STEPS.length+' — 미제출</div>'
+       +'<div class="qt">리마인드 문구 전송</div>'
+       +'<div class="qs">1차 응대 후 3~5일 내 한 번만 리마인드하세요. 두 번 이상은 하지 마세요.</div>'
+       +'<div class="rc hi"><div class="rl">리마인드 문구</div>'+cbox('tmpl_remind',REMIND)+clBtn()+'</div>'
+       +'<div class="ib"><i class="ti ti-info-circle" style="font-size:15px;vertical-align:-2px;margin-right:6px"></i>리마인드 후에도 무응답이면 C등급으로 분류하고 재컨택 여부를 판단하세요.</div>'
+       +'<div class="nr">'
+       +'<button class="bn" onclick="back()"><i class="ti ti-arrow-left" style="font-size:13px;vertical-align:-2px;margin-right:4px"></i>이전</button>'
+       +'<button class="bn" onclick="go(\'lead\',\'C\')">리마인드 후에도 무응답 →</button>'
+       +'</div>';
     } else {
       c=`<div class="lbl">step 5 / ${STEPS.length}</div>
       <div class="qt">리드 등급을 판단하세요</div>
@@ -260,20 +274,20 @@ function render(){
   } else if(S.step===5){
     const al=ACT[S.type][S.lead]||[];
     const bc='b'+S.lead.toLowerCase();
-    c=`<div class="lbl">step 6 / ${STEPS.length} — 완료</div>
-    <div class="qt">후속 응대 가이드</div>
-    <div style="margin-bottom:1.25rem">
-      <span class="badge ${bc}">${S.lead}등급</span>
-      <span style="font-size:13px;color:#666;margin-left:8px">${S.type==='inbound'?'인바운드':'아웃바운드'} · ${S.channel}</span>
-    </div>
-    <div class="rc hi"><div class="rl">체크리스트 확인 후 후속 문구</div>${cbox('tmpl_follow',FOLLOW[S.type][S.lead])}</div>
-    <div class="rc"><div class="rl">지금 해야 할 액션</div>
-      <ul class="al">${al.map((a,i)=>`<li><span class="nm">${i+1}</span>${a}</li>`).join('')}</ul>
-    </div>
-    <div class="nr">
-      <button class="bn" onclick="reset()"><i class="ti ti-refresh" style="font-size:13px;vertical-align:-2px;margin-right:4px"></i>처음부터</button>
-      <button class="bn" onclick="back()"><i class="ti ti-arrow-left" style="font-size:13px;vertical-align:-2px;margin-right:4px"></i>이전</button>
-    </div>`;
+    c='<div class="lbl">step 6 / '+STEPS.length+' — 완료</div>'
+     +'<div class="qt">후속 응대 가이드</div>'
+     +'<div style="margin-bottom:1.25rem">'
+     +'<span class="badge '+bc+'">'+S.lead+'등급</span>'
+     +'<span style="font-size:13px;color:#666;margin-left:8px">'+(S.type==='inbound'?'인바운드':'아웃바운드')+' · '+S.channel+'</span>'
+     +'</div>'
+     +'<div class="rc hi"><div class="rl">체크리스트 확인 후 후속 문구</div>'+cbox('tmpl_follow',FOLLOW[S.type][S.lead])+'</div>'
+     +'<div class="rc"><div class="rl">지금 해야 할 액션</div>'
+     +'<ul class="al">'+al.map((a,i)=>'<li><span class="nm">'+(i+1)+'</span>'+a+'</li>').join('')+'</ul>'
+     +'</div>'
+     +'<div class="nr">'
+     +'<button class="bn" onclick="reset()"><i class="ti ti-refresh" style="font-size:13px;vertical-align:-2px;margin-right:4px"></i>처음부터</button>'
+     +'<button class="bn" onclick="back()"><i class="ti ti-arrow-left" style="font-size:13px;vertical-align:-2px;margin-right:4px"></i>이전</button>'
+     +'</div>';
   }
   app.innerHTML=c;
 }
